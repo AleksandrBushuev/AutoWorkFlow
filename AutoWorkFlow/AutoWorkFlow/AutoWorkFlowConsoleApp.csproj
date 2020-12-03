@@ -54,6 +54,10 @@
       <Project>{ee5438b6-bb8f-444a-9d23-5628b910aa96}</Project>
       <Name>AutoWorkFlow.OTRS</Name>
     </ProjectReference>
+    <ProjectReference Include="..\AutoWorkFlow.TFS\AutoWorkFlow.TFS.csproj">
+      <Project>{b0b44a8a-6d70-40f3-aa43-6691cef1810d}</Project>
+      <Name>AutoWorkFlow.TFS</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

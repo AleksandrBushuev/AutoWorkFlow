@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.757
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoWorkFlow", "AutoWorkFlow\AutoWorkFlow.csproj", "{1C12BE62-13E4-436A-A963-073B0811F154}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoWorkFlowConsoleApp", "AutoWorkFlow\AutoWorkFlowConsoleApp.csproj", "{1C12BE62-13E4-436A-A963-073B0811F154}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoWorkFlow.OTRS", "AutoWorkFlow.OTRS\AutoWorkFlow.OTRS.csproj", "{EE5438B6-BB8F-444A-9D23-5628B910AA96}"
 EndProject
