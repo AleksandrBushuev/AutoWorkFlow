@@ -45,7 +45,7 @@ namespace AutoWorkFlow.OTRS
         {
             string mask = "Подробно Ticket#";
             int index = content.IndexOf(mask) + mask.Length + 25;
-            string name = content.Substring(index, 60);
+            string name = content.Substring(index, 200);
             string[] arr = name.Split('\"');
             return arr[0];
         }
