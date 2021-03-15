@@ -46,6 +46,7 @@
     <Compile Include="OtrsClient.cs" />
     <Compile Include="OtrsTicketInfo.cs" />
     <Compile Include="OtrsTicketInfoParser.cs" />
+    <Compile Include="OtrsTicketAgentParser.cs" />
     <Compile Include="UserCredential.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
