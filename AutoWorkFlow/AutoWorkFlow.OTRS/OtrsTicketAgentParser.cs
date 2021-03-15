@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace AutoWorkFlow.OTRS
 {
+    /// <summary>
+    /// Парсер страницы просмотра тикетов AgentTicketResponsibleView
+    /// </summary>
     class OtrsTicketAgentParser
     {
         public OtrsTicketAgentParser()
