@@ -10,6 +10,11 @@ namespace AutoWorkFlow.Serializable
 {
     public class XmlSerializerHelper<T>
     {
+        public XmlSerializerHelper()
+        {
+
+        }
+
         public void Serialize(string path, T data, FileMode mode = FileMode.OpenOrCreate)
         {         
 

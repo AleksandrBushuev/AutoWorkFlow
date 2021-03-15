@@ -1,7 +1,9 @@
 ﻿using AutoWorkFlow.OTRS;
+using AutoWorkFlow.Serializable;
 using AutoWorkFlow.TFS;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,20 +22,16 @@ namespace AutoWorkFlow
             IAutorizationService service = new AutorizationService(baseAddress, credential);
             OtrsClient client = new OtrsClient(service);
 
-            Console.WriteLine("Id тикета");
-            string id = Console.ReadLine();
-            OtrsTicketInfo info = client.GetTicketInfoAsync(baseAddress, id).Result;
+            List<int> ids= client.GetTicketsID(baseAddress).Result;
 
-            Console.WriteLine(info.ToString());
+            List<OtrsTicketInfo> ticketInfos= client.GetTisketInfoAsync(baseAddress, ids).Result;
 
+            XmlSerializerHelper<List<OtrsTicketInfo>> serializerHelper = new XmlSerializerHelper<List<OtrsTicketInfo>>();
 
-            Console.WriteLine("Личный маркер доступа");
-            string token = Console.ReadLine();
-            TfsClient tfsClient = new TfsClient();
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "Тикеты.xml");
 
-            TfsWorkIteamInfo workIteamInfo = tfsClient.GetWorkIteamInfoAsync("https://tfs.indusoft.ru/tfs/InduSoft/I-DS-RO/", token, info.WorkItem).Result;
+            serializerHelper.Serialize(path, ticketInfos);
 
-            Console.WriteLine(workIteamInfo.ToString());
 
             Console.ReadKey();
         }

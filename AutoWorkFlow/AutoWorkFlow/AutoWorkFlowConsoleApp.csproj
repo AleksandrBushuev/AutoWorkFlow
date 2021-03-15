@@ -50,6 +50,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\AutoWorkFlow.Serializable\AutoWorkFlow.Serializable.csproj">
+      <Project>{c23c6c60-b3ca-4b01-b2b3-e6ae1b61f041}</Project>
+      <Name>AutoWorkFlow.Serializable</Name>
+    </ProjectReference>
     <ProjectReference Include="..\AutoWorkFlow.OTRS\AutoWorkFlow.OTRS.csproj">
       <Project>{ee5438b6-bb8f-444a-9d23-5628b910aa96}</Project>
       <Name>AutoWorkFlow.OTRS</Name>
