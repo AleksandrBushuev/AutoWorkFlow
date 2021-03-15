@@ -5,8 +5,16 @@ namespace AutoWorkFlow.OTRS
     /// <summary>
     /// Информация по тикету OTRS
     /// </summary>
+    /// 
+    [Serializable]
     public class OtrsTicketInfo
     {
+        public string ID { get; set; }
+        public string Number { get; set; }
+        public string Name { get; set; }
+        public string State { get; set; }
+        public string WorkItem { get; set; }
+
         public OtrsTicketInfo() { }
         public OtrsTicketInfo(string id, string number, string name, string state, string workItem)
         {
@@ -15,14 +23,7 @@ namespace AutoWorkFlow.OTRS
             this.Name = name;
             this.State = state;
             this.WorkItem = workItem;
-        }
-
-        public string ID { get; set; }
-        public string Number { get; set; }
-        public string Name { get; set; }
-        public string State { get; set; }
-        public string WorkItem { get; set; }
-
+        }       
 
         public override string ToString()
         {

@@ -44,6 +44,7 @@
     <Compile Include="AutorizationService.cs" />
     <Compile Include="IAutorizationService.cs" />
     <Compile Include="OtrsClient.cs" />
+    <Compile Include="OtrsTicketAgentParser.cs" />    
     <Compile Include="OtrsTicketInfo.cs" />
     <Compile Include="OtrsTicketInfoParser.cs" />
     <Compile Include="UserCredential.cs" />
