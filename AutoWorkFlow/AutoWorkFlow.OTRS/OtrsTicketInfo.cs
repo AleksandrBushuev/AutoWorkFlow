@@ -4,8 +4,7 @@ namespace AutoWorkFlow.OTRS
 {
     /// <summary>
     /// Информация по тикету OTRS
-    /// </summary>
-    /// 
+    /// </summary>    
     [Serializable]
     public class OtrsTicketInfo
     {
