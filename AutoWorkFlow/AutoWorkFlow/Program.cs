@@ -22,15 +22,17 @@ namespace AutoWorkFlow
             IAutorizationService service = new AutorizationService(baseAddress, credential);
             OtrsClient client = new OtrsClient(service);
 
-            List<int> ids= client.GetTicketsID(baseAddress).Result;
+            List<int> ids = client.GetTicketsID(baseAddress).Result;
 
-            List<OtrsTicketInfo> ticketInfos= client.GetTisketInfoAsync(baseAddress, ids).Result;
+            List<OtrsTicketInfo> ticketInfos = client.GetTisketInfoAsync(baseAddress, ids).Result;
 
             XmlSerializerHelper<List<OtrsTicketInfo>> serializerHelper = new XmlSerializerHelper<List<OtrsTicketInfo>>();
 
             var path = Path.Combine(Directory.GetCurrentDirectory(), "Тикеты.xml");
 
             serializerHelper.Serialize(path, ticketInfos);
+
+            List<OtrsTicketInfo> tickets = serializerHelper.Deserialize(path);
 
 
             Console.ReadKey();

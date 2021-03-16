@@ -26,7 +26,7 @@ namespace AutoWorkFlow.Serializable
             }
         }
 
-        public T Deserialize(string path, FileMode mode = FileMode.OpenOrCreate)
+        public T Deserialize(string path, FileMode mode = FileMode.Open)
         {
             T data;
            
