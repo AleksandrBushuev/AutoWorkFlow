@@ -44,7 +44,25 @@ namespace AutoWorkFlow.OTRS
         /// <param name="baseAddress">Базовый адрес OTRS</param>
         /// <param name="idTiskets">Идентификаторы тикетов</param>
         /// <returns></returns>
-        public async Task<List<OtrsTicketInfo>> GetTisketInfoAsync(string baseAddress, List<int> idTiskets)
+        public async Task<List<OtrsTicketInfo>> GetTisketsInfoAsync(string baseAddress)
+        {
+            List<int> idTiskets = await GetTicketsID(baseAddress);
+            List<OtrsTicketInfo> ticketInfos = new List<OtrsTicketInfo>();
+            foreach (int id in idTiskets)
+            {
+                var info = await GetTicketInfoAsync(baseAddress, id.ToString());
+                ticketInfos.Add(info);
+            }
+            return ticketInfos;
+        }
+
+        /// <summary>
+        /// Получить информацию по тикетам
+        /// </summary>
+        /// <param name="baseAddress">Базовый адрес OTRS</param>
+        /// <param name="idTiskets">Идентификаторы тикетов</param>
+        /// <returns></returns>
+        public async Task<List<OtrsTicketInfo>> GetTisketsInfoAsync(string baseAddress, List<int> idTiskets)
         {
             List<OtrsTicketInfo> ticketInfos = new List<OtrsTicketInfo>();
             foreach (int id in idTiskets)
