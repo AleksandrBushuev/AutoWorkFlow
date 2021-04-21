@@ -10,65 +10,45 @@ namespace AutoWorkFlow.OTRS
     /// Служба аторизации OTRS
     /// </summary>
     public class AutorizationService : IAutorizationService
-    {
-        private CookieCollection _cookies;
-        private UserCredential _credential;
-
-
-        public AutorizationService(string address, UserCredential credential)
-        {
-            this.Address = address;
-            this._credential = credential;
-            _cookies = new CookieCollection();
-        }
-
+    {        
         public string Address { get; }
 
-
-        /// <summary>
-        /// Выполнить авторизацию
-        /// </summary>
-        /// <returns></returns>
-        public CookieCollection Login()
+        public AutorizationService(string address)
         {
-
-            if (_cookies.Count == 0)
-            {
-                _cookies = AuthorizeAsync().Result;
-            }
-            return _cookies;
-        }
-
-
-        public void Logout()
-        {
-
+            this.Address = address;           
         }
 
         /// <summary>
         /// Авторизация в OTRS
         /// </summary>
         /// <returns></returns>
-        private async Task<CookieCollection> AuthorizeAsync()
+        public async Task<CookieCollection> LoginAsync(UserCredential credential)
         {
             using (var clientHandler = new HttpClientHandler())
             {
                 using (var client = new HttpClient(clientHandler))
                 {
                     var uri = new Uri(Address);
-                    var response = await client.PostAsync(uri, CreateBody());
+                    var response = await client.PostAsync(uri, CreateBody(credential.Login, credential.Password));
                     response.EnsureSuccessStatusCode();
-
                     return clientHandler.CookieContainer.GetCookies(uri);
                 }
 
             }
         }
+
+        public void Logout()
+        {
+
+        }
+
+      
+      
         /// <summary>
         /// Создать параметры авторизации в теле POST запроса
         /// </summary>
         /// <returns></returns>
-        private HttpContent CreateBody()
+        private HttpContent CreateBody(string login, string password)
         {
             return new FormUrlEncodedContent(new[]
             {
@@ -76,11 +56,14 @@ namespace AutoWorkFlow.OTRS
                     new KeyValuePair<string,string>("RequestedURL",""),
                     new KeyValuePair<string,string>("Lang","ru"),
                     new KeyValuePair<string,string>("TimeOffset","-300"),
-                    new KeyValuePair<string,string>("User", _credential.Login),
-                    new KeyValuePair<string,string>("Password",_credential.Password),
+                    new KeyValuePair<string,string>("User", login),
+                    new KeyValuePair<string,string>("Password", password),
             });
         }
 
 
+
+
+        
     }
 }
