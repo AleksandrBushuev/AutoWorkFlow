@@ -27,9 +27,8 @@ namespace AutoWorkFlow.OTRS
             int index = page.IndexOf(mask) + mask.Length;
             string name = page.Substring(index, 3);
             string[] arr = name.Split('\0');
-
-            int count = Convert.ToInt32(arr[0]);
-
+            int count;
+            int.TryParse(arr[0], out count);
             return count;
         }
 
@@ -52,7 +51,8 @@ namespace AutoWorkFlow.OTRS
             for (int i = 1; i < text.Length; i++)
             {
                 string temp = text[i].Substring(0, 6);
-                int id = Convert.ToInt32(temp.Split('"')[0]);
+                int id;
+                int.TryParse(temp.Split('"')[0], out id);
                 ids.Add(id);
             }
 
