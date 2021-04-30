@@ -1,6 +1,5 @@
 ﻿using AutoWorkFlow.OTRS;
 using AutoWorkFlow.Serializable;
-using AutoWorkFlow.TFS;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,9 +26,9 @@ namespace AutoWorkFlow
 
             var path = Path.Combine(Directory.GetCurrentDirectory(), "Тикеты.xml");
 
-            serializerHelper.Serialize(path, ticketInfos);
+            serializerHelper.Serialize(path, tickets);
 
-            List<OtrsTicketInfo> tickets = serializerHelper.Deserialize(path);
+            
 
 
             Console.ReadKey();
