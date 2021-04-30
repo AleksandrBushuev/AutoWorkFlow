@@ -9,7 +9,7 @@ namespace AutoWorkFlow.OTRS
 {
     public interface IAutorizationService
     {
-        CookieCollection Login();
+        Task<CookieCollection> LoginAsync(UserCredential credential);
 
         void Logout();
     }

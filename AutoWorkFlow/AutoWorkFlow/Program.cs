@@ -14,17 +14,14 @@ namespace AutoWorkFlow
     {
         static void Main(string[] args)
         {
-            var baseAddress = "https://support.indusoft.ru/otrs/index.pl";
+			var baseAddress = "https://support.indusoft.ru/otrs/index.pl";
+            var credential = InputUserCredential();
+         
+            IAutorizationService service = new AutorizationService(baseAddress);
+            OtrsClient client = new OtrsClient(baseAddress, service);
+            client.Login(credential);
 
-
-            UserCredential credential = InputUserCredential();
-
-            IAutorizationService service = new AutorizationService(baseAddress, credential);
-            OtrsClient client = new OtrsClient(service);
-
-            List<int> ids = client.GetTicketsID(baseAddress).Result;
-
-            List<OtrsTicketInfo> ticketInfos = client.GetTisketInfoAsync(baseAddress, ids).Result;
+            List<OtrsTicketInfo> tickets = client.GetTisketsInfoAsync().Result;
 
             XmlSerializerHelper<List<OtrsTicketInfo>> serializerHelper = new XmlSerializerHelper<List<OtrsTicketInfo>>();
 
@@ -39,15 +36,14 @@ namespace AutoWorkFlow
         }
 
 
-
-        static UserCredential InputUserCredential()
+        private static UserCredential InputUserCredential()
         {
             Console.WriteLine("Введите логин пользователя OTRS");
             string login = Console.ReadLine();
-            Console.WriteLine("Введите пароль пользователя OTRS");
+            Console.WriteLine("Введите логин пользователя OTRS");
             string password = Console.ReadLine();
-
             return new UserCredential(login, password);
         }
+       
     }
 }

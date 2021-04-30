@@ -45,5 +45,14 @@
     <Compile Include="XmlSerializerHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AutoWorkFlow.OTRS\AutoWorkFlow.OTRS.csproj">
+      <Project>{ee5438b6-bb8f-444a-9d23-5628b910aa96}</Project>
+      <Name>AutoWorkFlow.OTRS</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

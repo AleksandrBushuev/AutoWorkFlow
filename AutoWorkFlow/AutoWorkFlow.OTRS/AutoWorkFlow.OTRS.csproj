@@ -43,10 +43,10 @@
   <ItemGroup>
     <Compile Include="AutorizationService.cs" />
     <Compile Include="IAutorizationService.cs" />
-    <Compile Include="OtrsClient.cs" />
-    <Compile Include="OtrsTicketAgentParser.cs" />    
+    <Compile Include="OtrsClient.cs" />   
     <Compile Include="OtrsTicketInfo.cs" />
-    <Compile Include="OtrsTicketInfoParser.cs" />
+    <Compile Include="Helper\OtrsTicketInfoParser.cs" />
+    <Compile Include="Helper\OtrsTicketAgentParser.cs" />
     <Compile Include="UserCredential.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

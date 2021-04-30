@@ -13,63 +13,103 @@ namespace AutoWorkFlow.OTRS
     public class OtrsClient
     {
         private IAutorizationService _service;
+        private CookieCollection _cookie;
 
-        public OtrsClient(IAutorizationService service)
+        public string Address { get; private set; }       
+        public bool IsLogin { get; private set; }       
+
+        public OtrsClient(string address, IAutorizationService autorizationService)
         {
-            _service = service;
+            this.Address = address;
+            _service = autorizationService;         
         }
+
+
+
+        public bool Login(UserCredential credential) {
+            IsLogin = false;
+            _cookie = _service.LoginAsync(credential).Result;
+            if (validateCookie(_cookie)) {
+                IsLogin = true;                
+            }
+            return IsLogin;
+        }
+        
 
         /// <summary>
         /// Получить информацию по тикету
-        /// </summary>
-        /// <param name="baseAddress">Базовый адрес OTRS</param>
+        /// </summary>       
         /// <param name="ticketId">Идентификатор тикета</param>
         /// <returns></returns>
-        public async Task<OtrsTicketInfo> GetTicketInfoAsync(string baseAddress, string ticketId)
+        public async Task<OtrsTicketInfo> GetTicketInfoAsync(string ticketId)
         {
-            Uri uri = new Uri(string.Format("{0}?Action=AgentTicketZoom;TicketID={1}", baseAddress, ticketId));
-            string sitePage;
-            using (var client = CreateClient(baseAddress))
+            var result = new OtrsTicketInfo();
+            if (!IsLogin)
             {
-                HttpResponseMessage response = await client.GetAsync(uri);
-                response.EnsureSuccessStatusCode();
-                sitePage = await response.Content.ReadAsStringAsync();
+                return null;
             }
-            return OtrsTicketInfoParser.convertToOtrsTicketInfo(sitePage);
+            Uri uri = new Uri(string.Format("{0}?Action=AgentTicketZoom;TicketID={1}", this.Address, ticketId));
+            string sitePage = await GetAsync(uri);
+            OtrsTicketInfoParser.parseTicketInfo(sitePage, out result);
+            return result;
+
         }
 
         /// <summary>
         /// Получить информацию по тикетам
-        /// </summary>
-        /// <param name="baseAddress">Базовый адрес OTRS</param>
+        /// </summary>              
+        /// <returns></returns>
+        public async Task<List<OtrsTicketInfo>> GetTisketsInfoAsync()
+        {
+            List<int> idTiskets = await GetIdTicketAll();
+            List<OtrsTicketInfo> ticketInfos = new List<OtrsTicketInfo>();
+            ticketInfos = await GetTisketsInfoAsync(idTiskets);
+            return ticketInfos;
+        }
+
+        /// <summary>
+        /// Получить информацию по тикетам
+        /// </summary>      
         /// <param name="idTiskets">Идентификаторы тикетов</param>
         /// <returns></returns>
-        public async Task<List<OtrsTicketInfo>> GetTisketInfoAsync(string baseAddress, List<int> idTiskets)
+        public async Task<List<OtrsTicketInfo>> GetTisketsInfoAsync( List<int> idTiskets)
         {
+            if (!IsLogin)
+            {
+                return null;
+            }
             List<OtrsTicketInfo> ticketInfos = new List<OtrsTicketInfo>();
+            var tasks = new List<Task>();//
             foreach (int id in idTiskets)
             {
-                var info = await GetTicketInfoAsync(baseAddress, id.ToString());
-                ticketInfos.Add(info);
+                tasks.Add(Task.Run(()=>{
+                    var info = GetTicketInfoAsync(id.ToString()).Result;
+                    ticketInfos.Add(info);
+                }));                
             }
+            await Task.WhenAll(tasks.ToArray());
             return ticketInfos;
         }
 
 
         /// <summary>
         /// Получить информацию по тикету
-        /// </summary>
-        /// <param name="baseAddress">Базовый адрес OTRS</param>        
+        /// </summary>            
         /// <returns></returns>
-        public async Task<List<int>> GetTicketsID(string baseAddress)
+        public async Task<List<int>> GetIdTicketAll()
         {
+            List<int> idTiskets = new List<int>();  
+            if (!IsLogin)
+            {
+                return idTiskets;
+            }
             OtrsTicketAgentParser agentParser = new OtrsTicketAgentParser();
-            List<int> idTiskets = new List<int>();
+
             int startHit = 0;
             int count = 0;
             do
             {
-                string page = await LoadAgentTisketAsync(baseAddress, startHit);
+                string page = await LoadPageAgentTisketAsync(this.Address, startHit);
                 if (count == 0)
                 {
                     count = agentParser.GetTicketCount(page);
@@ -80,61 +120,73 @@ namespace AutoWorkFlow.OTRS
 
             var result = idTiskets.Distinct().ToList();//удалить дубликаты
             return result;
-        }            
-       
+        }
 
-        /// <summary> 
-        /// Загрузить страницу AgentTicketResponsibleView
-        /// </summary>
-        /// <param name="baseAddress">Базовый адрес OTRS</param>
-        /// <param name="startHit">Начальный номер тикета для загрузки таблицы</param>
-        /// <returns></returns>
-        private async Task<string> LoadAgentTisketAsync(string baseAddress, int startHit)
+        #region Private
+
+        private async Task<string> GetAsync(Uri uri)
+        {
+            using (var client = CreateClient())
+            {
+                try
+                {                  
+                    var response = await client.GetAsync(uri);
+                    response.EnsureSuccessStatusCode();
+                    var page = await response.Content.ReadAsStringAsync();
+                    return page;
+                }
+                catch (Exception ex)
+                {                    
+                    return string.Empty;
+                }
+            }
+        }
+
+        private bool validateCookie(CookieCollection cookie)
+        {
+            if (cookie.Count != 0
+                && cookie[0].Name.Equals("OTRSAgentInterface")
+                && !string.IsNullOrEmpty(cookie[0].Value))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private async Task<string> LoadPageAgentTisketAsync(string baseAddress, int startHit)
         {
             Uri uri = new Uri($"{baseAddress}?Action=AgentTicketResponsibleView;Filter=All;View=;SortBy=Age;OrderBy=Down;StartWindow=0;StartHit={startHit}");
-            string sitePage;
-            using (var client = CreateClient(baseAddress))
-            {
-                HttpResponseMessage response = await client.GetAsync(uri);
-                response.EnsureSuccessStatusCode();
-                sitePage = await response.Content.ReadAsStringAsync();
-            }
+            string sitePage =  await GetAsync(uri);
             return sitePage;
         }
 
 
-
         /// <summary>
         /// Создать HttpClienta для отправки запросов в OTRS
-        /// </summary>
-        /// <param name="baseAddress"></param>
+        /// </summary>       
         /// <returns></returns>
-        private HttpClient CreateClient(string baseAddress)
+        private HttpClient CreateClient()
         {
             HttpClientHandler clientHandler = new HttpClientHandler()
             {
                 CookieContainer = CreateCookieContainer()
             };
             HttpClient client = new HttpClient(clientHandler);
-            client.BaseAddress = new Uri(baseAddress);
+            client.BaseAddress = new Uri(this.Address);
             return client;
 
         }
 
 
-
         private CookieContainer CreateCookieContainer()
         {
             CookieContainer container = new CookieContainer();
-            container.Add(Login());
+            container.Add(_cookie);
             return container;
-        }     
-        
-       
-        private CookieCollection Login()
-        {
-            return _service.Login();//Получить cookie в службе авторизации
         }
 
+        
+
+        #endregion
     }
 }
