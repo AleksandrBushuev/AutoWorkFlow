@@ -13,19 +13,27 @@ namespace AutoWorkFlow.TFS
     /// </summary>
     public class TfsClient
     {
+
+        public string BaseAddress { get; set; } //Базовый адрес проекта TFS, например https://host/tfs/company/_git/Project</>
+
+        public TfsClient(string baseAddress)
+        {
+            this.BaseAddress = baseAddress;
+        }
+
+
         /// <summary>
         /// Получить информацию по рабочему элементу TFS
-        /// </summary>
-        /// <param name="baseAdsressProject"> Базовый адрес проекта TFS, например https://host/tfs/company/_git/Project</>
+        /// </summary>       
         /// <param name="personalaccesstoken">Личный маркер доступа</param>
         /// <param name="workIteam">Номер рабочего элемента</param>
         /// <returns></returns>
-        public async Task<TfsWorkIteamInfo> GetWorkIteamInfoAsync(string baseAdsressProject, string personalaccesstoken, string workIteam)
+        public async Task<TfsWorkIteamInfo> GetWorkIteamInfoAsync(string personalaccesstoken, string workIteam)
         {
             using (HttpClient client = CreateClient(personalaccesstoken))
             {
                 string content;
-                using (HttpResponseMessage response = await client.GetAsync($"{ baseAdsressProject}/_apis/wit/workItems/{workIteam}"))
+                using (HttpResponseMessage response = await client.GetAsync($"{ BaseAddress}/_apis/wit/workItems/{workIteam}"))
                 {
                     response.EnsureSuccessStatusCode();
                     content = await response.Content.ReadAsStringAsync();
