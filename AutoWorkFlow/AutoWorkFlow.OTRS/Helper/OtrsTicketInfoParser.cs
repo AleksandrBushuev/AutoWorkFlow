@@ -101,14 +101,13 @@ namespace AutoWorkFlow.OTRS
         /// <param name="content"></param>
         /// <returns></returns>
         public static void parseTicketInfo(string content, out OtrsTicketInfo ticketInfo)
-        {
+        {            
             string id = parseId(content);
             string number = parseNumber(content);
             string name = parseName(content);
             string state = parseState(content);
             string workItem = parseWorkItem(content);
-
-            ticketInfo();
+            ticketInfo = new OtrsTicketInfo(id, number, name, state, workItem);
         }
     }
 }

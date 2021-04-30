@@ -43,13 +43,16 @@ namespace AutoWorkFlow.OTRS
         /// <returns></returns>
         public async Task<OtrsTicketInfo> GetTicketInfoAsync(string ticketId)
         {
+            var result = new OtrsTicketInfo();
             if (!IsLogin)
             {
                 return null;
             }
             Uri uri = new Uri(string.Format("{0}?Action=AgentTicketZoom;TicketID={1}", this.Address, ticketId));
-            string sitePage = await GetAsync(uri);            
-            return OtrsTicketInfoParser.convertToOtrsTicketInfo(sitePage);
+            string sitePage = await GetAsync(uri);
+            OtrsTicketInfoParser.parseTicketInfo(sitePage, out result);
+            return result;
+
         }
 
         /// <summary>
@@ -58,8 +61,7 @@ namespace AutoWorkFlow.OTRS
         /// <param name="idTiskets">Идентификаторы тикетов</param>
         /// <returns></returns>
         public async Task<List<OtrsTicketInfo>> GetTisketsInfoAsync()
-        {
-            
+        {            
             List<int> idTiskets = await GetIdTicketAll();
             List<OtrsTicketInfo> ticketInfos = new List<OtrsTicketInfo>();
             foreach (int id in idTiskets)
