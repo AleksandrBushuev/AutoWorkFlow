@@ -57,18 +57,22 @@ namespace AutoWorkFlow.OTRS
 
         /// <summary>
         /// Получить информацию по тикетам
-        /// </summary>      
-        /// <param name="idTiskets">Идентификаторы тикетов</param>
+        /// </summary>              
         /// <returns></returns>
         public async Task<List<OtrsTicketInfo>> GetTisketsInfoAsync()
-        {            
+        {
+            List<int> idTiskets = await GetIdTicketAll();
+            List<OtrsTicketInfo> ticketInfos = new List<OtrsTicketInfo>();
+            ticketInfos = await GetTisketsInfoAsync(idTiskets);
+
+            /*
             List<int> idTiskets = await GetIdTicketAll();
             List<OtrsTicketInfo> ticketInfos = new List<OtrsTicketInfo>();
             foreach (int id in idTiskets)
             {
                 var info = await GetTicketInfoAsync(id.ToString());
                 ticketInfos.Add(info);
-            }
+            } */
             return ticketInfos;
         }
 
@@ -84,11 +88,21 @@ namespace AutoWorkFlow.OTRS
                 return null;
             }
             List<OtrsTicketInfo> ticketInfos = new List<OtrsTicketInfo>();
+
+            var tasks = new List<Task>();//
+
             foreach (int id in idTiskets)
             {
-                var info = await GetTicketInfoAsync(id.ToString());
-                ticketInfos.Add(info);
+                tasks.Add(Task.Run(()=>{
+                    var info = GetTicketInfoAsync(id.ToString()).Result;
+                    ticketInfos.Add(info);
+                }));                
             }
+
+            await Task.WhenAll(tasks.ToArray());
+
+
+
             return ticketInfos;
         }
 
