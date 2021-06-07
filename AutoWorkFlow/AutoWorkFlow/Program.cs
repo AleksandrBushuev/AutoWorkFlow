@@ -13,22 +13,30 @@ namespace AutoWorkFlow
     {
         static void Main(string[] args)
         {
-			var baseAddress = "https://support.indusoft.ru/otrs/index.pl";
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "Тикеты.xml");
+            var baseAddress = "https://support.indusoft.ru/otrs/index.pl";
             var credential = InputUserCredential();
          
             IAutorizationService service = new AutorizationService(baseAddress);
             OtrsClient client = new OtrsClient(baseAddress, service);
             client.Login(credential);
 
+            if (!client.IsLogin)
+            {
+                Console.WriteLine("Не удалось выполнить авторизацию");
+            }else
+            {
+                Console.WriteLine("Выполняется запрос данных. Ожидайте...");
+            }
+
+           
             List<OtrsTicketInfo> tickets = client.GetTisketsInfoAsync().Result;
+            ExportToXML(path, tickets);
 
-            XmlSerializerHelper<List<OtrsTicketInfo>> serializerHelper = new XmlSerializerHelper<List<OtrsTicketInfo>>();
 
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "Тикеты.xml");
 
-            serializerHelper.Serialize(path, tickets);
 
-            
+
 
 
             Console.ReadKey();
@@ -39,10 +47,18 @@ namespace AutoWorkFlow
         {
             Console.WriteLine("Введите логин пользователя OTRS");
             string login = Console.ReadLine();
-            Console.WriteLine("Введите логин пользователя OTRS");
+            Console.WriteLine("Введите пароль пользователя OTRS");
             string password = Console.ReadLine();
             return new UserCredential(login, password);
         }
        
+
+        private static void ExportToXML(string path, List<OtrsTicketInfo> tickets)
+        {
+            XmlSerializerHelper<List<OtrsTicketInfo>> serializerHelper = new XmlSerializerHelper<List<OtrsTicketInfo>>();
+            serializerHelper.Serialize(path, tickets);
+        }
+
+
     }
 }
