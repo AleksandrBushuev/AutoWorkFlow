@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace AutoWorkFlow.OTRS
@@ -18,11 +19,14 @@ namespace AutoWorkFlow.OTRS
         /// <returns></returns>
         public static string parseId(string content)
         {
-            string mask = "TicketID=";
-            int index = content.IndexOf(mask) + mask.Length;
-            string name = content.Substring(index, 6);
-            string[] arr = name.Split('"');
-            return arr[0];
+            Regex regex = new Regex(@"(?<=TicketID=)\d+");
+            MatchCollection match = regex.Matches(content);
+            if (match.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            return match[0].Value;
         }
         /// <summary>
         /// Получить номер тикета
@@ -30,11 +34,15 @@ namespace AutoWorkFlow.OTRS
         /// <param name="content"></param>
         /// <returns></returns>
         public static string parseNumber(string content)
-        {
-            string mask = "Подробно Ticket#";
-            int index = content.IndexOf(mask) + mask.Length;
-            string ticket = content.Substring(index, 16);
-            return ticket;
+        {           
+            Regex regex = new Regex(@"(?<=Подробно Ticket#)\d+");
+            MatchCollection match = regex.Matches(content);
+            if (match.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            return match[0].Value;            
         }
         /// <summary>
         /// Получить имя тикета
@@ -43,11 +51,13 @@ namespace AutoWorkFlow.OTRS
         /// <returns></returns>
         public static string parseName(string content)
         {
-            string mask = "Подробно Ticket#";
-            int index = content.IndexOf(mask) + mask.Length + 25;
-            string name = content.Substring(index, 200);
-            string[] arr = name.Split('\"');
-            return arr[0];
+            Regex regex = new Regex(@"[\w\s|\.\,\!\?\-\:]+(?=</h1)");
+            MatchCollection match = regex.Matches(content);
+            if (match.Count == 0)
+            {
+                return string.Empty;
+            }
+            return match[0].Value;
         }
 
         /// <summary>
