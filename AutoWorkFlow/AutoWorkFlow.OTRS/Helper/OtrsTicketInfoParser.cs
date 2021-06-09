@@ -68,13 +68,21 @@ namespace AutoWorkFlow.OTRS
         /// <returns></returns>
         private static string parseName(string content)
         {
-            Regex regex = new Regex(@"[\w\s|\.\,\!\?\-\:]+(?=</h1)");
-            MatchCollection match = regex.Matches(content);
-            if (match.Count == 0)
-            {
-                return string.Empty;
-            }
-            return match[0].Value;
+            string name = string.Empty;
+            Regex regexTitle = new Regex(@"<h1 [\w\s\W]+</h1>");
+            MatchCollection matchTitle = regexTitle.Matches(content);
+            if (matchTitle.Count == 0)
+                return name;
+
+            Regex regexName = new Regex(@"(?<=</span>)[\w\s\W]+(?=</h1>)");
+            MatchCollection matchName = regexName.Matches(matchTitle[0].Value);
+            if (matchName.Count == 0)
+                return name;
+
+            name = matchName[0].Value;
+
+
+            return name;
         }
 
         /// <summary>
