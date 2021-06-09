@@ -50,7 +50,7 @@ namespace AutoWorkFlow.OTRS
             }
             Uri uri = new Uri(string.Format("{0}?Action=AgentTicketZoom;TicketID={1}", this.Address, ticketId));
             string sitePage = await GetAsync(uri);
-            OtrsTicketInfoParser.parseTicketInfo(sitePage, out result);
+            OtrsTicketInfoParser.parse(sitePage, out result);
             return result;
 
         }
